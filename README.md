@@ -43,6 +43,34 @@ This plugin's whole shape is built around those failure modes.
 
 5. **Autonomy with brakes.** `task-loop` runs through long plans unattended, but stops hard at human gates and at the AI-feature-specific guardrails (eval regression, budget breach, model bump). It commits between tasks so the human always has a clean rollback point.
 
+## Pairing with `/goal`
+
+`/goal` (Claude Code ≥ v2.1.139) is the recommended way to drive `task-loop` unattended. It wraps the session with an external evaluator that, after every turn, checks whether the loop's stated end-state actually holds — independent of what the loop itself claims. The loop's internal stop conditions are still useful (they make the next-step decision); `/goal` is the second pair of eyes.
+
+The project spine's hard rules treat this as the default for any multi-turn unattended run.
+
+A typical pattern:
+
+```text
+/goal Plan walk complete — every task in docs/plans/<feature>.md has a green
+commit from /agentic-ai-features:task-loop (Verifier PASS, Reviewer approved
+or approved-with-notes), OR a human gate is surfaced and awaiting input,
+OR the loop reports a hard stop. Stop after at most 50 turns.
+
+/agentic-ai-features:task-loop --plan docs/plans/<feature>.md
+```
+
+Why bother?
+
+- Self-stop is unreliable. A loop can drift into "almost done, one more try" forever.
+- `/goal`'s evaluator sees the whole transcript, so it catches "loop has been on TASK-017 for 8 turns" patterns the per-task retry counter can't.
+- Cost / token clauses can go straight into the goal condition.
+- On `--resume`, both the loop's journal (`docs/work-log.md`) and the goal condition restore — they compose cleanly.
+
+`/goal` is not a replacement for the loop. The loop is the workflow (plan walking, three-agent pipeline, commit between tasks, journal). `/goal` is the termination check on top.
+
+If `/goal` is unavailable (older Claude Code, or hooks disabled), the loop still runs in self-stop mode — but the journal entry should note that the external gate was absent so audits can flag it.
+
 ## Install
 
 ```bash

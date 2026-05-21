@@ -115,6 +115,36 @@ Exit the loop and report to the caller when any of these occurs:
 - `--max-tasks N` reached.
 - The user typed an instruction since the last task — surface it before continuing.
 
+## Combining with `/goal` (recommended for unattended runs)
+
+The loop's internal stop conditions are self-reported — the orchestrator decides when to exit. That is fine for short interactive runs, but for long unattended runs (overnight, "walk this 40-task plan", background autonomous work) the project spine's hard rule applies: **wrap the loop in `/goal`** (Claude Code ≥ v2.1.139). `/goal` adds a separate evaluator that judges termination from the conversation transcript after every turn — an external reality-check on top of the loop's own report.
+
+Recommended pattern:
+
+```text
+/goal Plan walk complete — every task in <plan-path> has a green commit
+from /agentic-ai-features:task-loop (Verifier PASS, Reviewer `approved` or
+`approved with notes`), OR a human gate has been surfaced and is awaiting
+user input, OR the loop reports a hard stop (3 retries exceeded, missing
+dependency, ambiguous task). Stop after at most <N> turns.
+```
+
+Substitute `<plan-path>` and `<N>` (a reasonable upper bound — start at 50 for a 30-task plan; raise if needed).
+
+Why this matters:
+
+- The loop can drift into "almost done, one more try" patterns even when the right answer is to stop. A fresh evaluator catches that.
+- The loop's own retry counter resets per task. The `/goal` evaluator sees the whole transcript, so it can spot "the loop has been on TASK-017 for 8 turns" patterns the internal counter cannot.
+- The loop has no opinion about cost. The `/goal` evaluator can include a token / cost clause in the condition.
+- On `--resume`, the loop reads `docs/work-log.md` to find where to continue; `/goal` restores the condition. The two compose cleanly.
+
+Caveats:
+
+- The `/goal` evaluator does not call tools or read files. It only judges what the transcript surfaces. The loop already surfaces commit lines, verifier verdicts, reviewer verdicts, and journal writes — that is enough for the evaluator. Do not strip those from the loop's mid-task output.
+- One `/goal` per session. If the user wants concurrent loops, they need concurrent sessions.
+
+If `/goal` is unavailable (older Claude Code, or `disableAllHooks` is set), the loop still runs — but document the run as "self-stop only" in the journal so future audits know the external gate was absent.
+
 ## State recovery
 
 On startup, before Step 1 of the first task:

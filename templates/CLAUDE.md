@@ -33,6 +33,7 @@
 - **No silent scope expansion** — if implementation requires files or behavior outside the task scope, stop and ask.
 - **Evidence over confidence** — do not mark work complete unless the listed verification commands or observations pass.
 - **Fresh-agent isolation** — implementation, verification, and review must run in separate agent invocations. Never let one agent rubber-stamp its own work.
+- **`/goal`-wrapped unattended runs** — when `/goal` is available (Claude Code ≥ v2.1.139), wrap any multi-turn unattended run (`/agentic-ai-features:task-loop`, long `/agentic-ai-features:check-completeness` sweeps) in `/goal` so an external evaluator — not the loop's own self-report — decides termination.
 
 **AI-feature rules** (apply when the task touches prompts, model calls, or LLM output)
 
