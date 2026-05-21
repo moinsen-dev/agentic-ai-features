@@ -73,12 +73,30 @@ If `/goal` is unavailable (older Claude Code, or hooks disabled), the loop still
 
 ## Install
 
-```bash
-# install from local checkout while developing
-claude --plugin-dir /path/to/agentic-ai-features
+This repo doubles as a Claude Code marketplace and a plugin — add the marketplace once, then install the plugin from it.
 
-# once published to a marketplace
-/plugin install agentic-ai-features
+```text
+# 1. add this repo as a marketplace
+/plugin marketplace add moinsen-dev/agentic-ai-features
+
+# 2. install the plugin from it
+/plugin install agentic-ai-features@moinsen-agentic-ai-features
+```
+
+After install, restart Claude Code (or run `/plugin` and pick "Reload") so the new slash commands and sub-agents register.
+
+To pull updates later:
+
+```text
+/plugin marketplace update moinsen-agentic-ai-features
+/plugin update agentic-ai-features@moinsen-agentic-ai-features
+```
+
+For local development, point the marketplace at your checkout instead of GitHub:
+
+```text
+/plugin marketplace add /absolute/path/to/agentic-ai-features
+/plugin install agentic-ai-features@moinsen-agentic-ai-features
 ```
 
 ## Use
