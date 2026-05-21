@@ -1,0 +1,11 @@
+{
+  "name": "agentic-ai-features",
+  "description": "Agentic kit for building AI features: feature-planner, task-loop, isolated implementer/verifier/reviewer agents, reachability + eval-coverage audits, and a project-spine template with AI-specific hard rules (model pinning, eval before merge, cost/latency budgets).",
+  "version": "0.1.0",
+  "author": {
+    "name": "Ulrich Diedrichsen",
+    "email": "developer@moinsen.dev"
+  },
+  "homepage": "https://github.com/moinsen-dev/agentic-ai-features",
+  "license": "MIT"
+}
