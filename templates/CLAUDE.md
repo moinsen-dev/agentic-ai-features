@@ -9,7 +9,7 @@
 ## Start Here
 
 - **First-time agent:** read this file, then `README.md`, then any `docs/refs/` triggers that match your task.
-- **Foundation first:** `/agentic-ai-features:foundation` — 5-perspective council (user-advocate, investor-advocate, architect, security-auditor, skeptic) → produces `README.md` and `docs/foundation/`. **Mandatory before any feature work.**
+- **Foundation first:** `/agentic-ai-features:foundation` — 5-perspective council (user-advocate, investor-advocate, architect, security-auditor, skeptic) → produces `README.md`, `docs/foundation/`, hydrates this spine, and creates `docs/refs/`. **Mandatory before any feature work.**
 - **Planning a feature:** `/agentic-ai-features:feature-planner` — produces a decision-complete plan before implementation.
 - **Implementing one task:** `/agentic-ai-features:implement-task` — runs implementer + verifier + reviewer (each in its own agent context) for a single scoped task, then stops.
 - **Walking a multi-task plan:** `/agentic-ai-features:task-loop` — autonomously walks a plan file task by task, commits between tasks, stops at human gates.
@@ -21,6 +21,7 @@ This project follows the plugin's **foundation-first** workflow. Before any of `
 
 - `README.md` — project anchor authored by the foundation council.
 - `docs/foundation/OPEN-DECISIONS.md` — gating checklist with **every item ticked**.
+- `docs/refs/` — progressive-disclosure references linked from this spine.
 
 While any item in `OPEN-DECISIONS.md` is unchecked (`- [ ]`), the three implementation skills refuse to start and direct the user to resolve the decisions first.
 
@@ -156,6 +157,7 @@ Keep this file short. If a section needs more than a few lines of explanation, m
 | `agentic-ai-features:security-auditor` (council seat) | Foundation perspective: threats, data flows, AI-safety (prompt injection, leak, misuse), compliance. |
 | `agentic-ai-features:skeptic` (council seat) | Foundation perspective: load-bearing assumptions, prior art, kill criteria — the brake on the council. |
 | `agentic-ai-features:foundation-synthesizer` | Consolidates the five council drafts into `README.md`, `docs/foundation/PERSPECTIVES.md`, `docs/foundation/OPEN-DECISIONS.md`. Does not add a sixth opinion. |
+| `agentic-ai-features:foundation-spine-hydrator` | Hydrates `CLAUDE.md` and `docs/refs/` from foundation output so agents start from a project-specific index. |
 | `agentic-ai-features:task-implementer` (sub-agent) | Applies one task within explicit scope. Stops on scope expansion. |
 | `agentic-ai-features:task-verifier` (sub-agent) | Checks measurable acceptance criteria. Marks subjective items as human verification required. |
 | `agentic-ai-features:code-reviewer` (sub-agent) | Reviews risk, conventions, tests, docs, scope creep, and (for AI features) prompt-diff / eval / cost. Does not certify product correctness. |

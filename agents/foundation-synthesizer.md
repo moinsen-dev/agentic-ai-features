@@ -1,6 +1,6 @@
 ---
 name: foundation-synthesizer
-description: Foundation-council synthesizer. Reads the project pitch and the five council perspective drafts (user-advocate, investor-advocate, architect, security-auditor, skeptic), then produces three output files — README.md (project anchor), docs/foundation/PERSPECTIVES.md (consolidated council protocol), docs/foundation/OPEN-DECISIONS.md (3–7 unresolved questions that gate task work). Dispatched by /agentic-ai-features:foundation after the five council agents have finished.
+description: Foundation-council synthesizer. Reads the project pitch and the five council perspective drafts (user-advocate, investor-advocate, architect, security-auditor, skeptic), then produces three output files — README.md (project anchor), docs/foundation/PERSPECTIVES.md (consolidated council protocol), docs/foundation/OPEN-DECISIONS.md (3–7 unresolved questions that gate task work). Dispatched by /agentic-ai-features:foundation after the five council agents have finished and before the spine hydrator runs.
 tools: Read, Write, Glob, Grep
 ---
 
@@ -21,7 +21,7 @@ The caller must confirm all of the following exist before you run:
 
 If any are missing, stop and report. Do not synthesize a council vote you do not have.
 
-You also need the project's existing `CLAUDE.md` (for the "How agents work here" section in the README) and the plugin's `templates/README.md` (your skeleton).
+You also need the project's existing `CLAUDE.md` or `AGENTS.md` (for the "How agents work here" section in the README) and the plugin's `templates/README.md` (your skeleton).
 
 ## Workflow
 
@@ -45,7 +45,7 @@ The README must include, at minimum:
 - **Hard decisions** — locked-in calls from the council (stack pillars, audience focus, what's in scope, what's out of scope). Each one-line, sourced from the seat that argued for it.
 - **Open risks** — top 3 from security + skeptic. Each with the trigger that would escalate it.
 - **Kill criteria** — from skeptic. If the project should be killed under condition X, name X.
-- **How agents work here** — short pointer block: this project follows the `agentic-ai-features` plugin conventions; before any feature work an agent reads `CLAUDE.md`, then this README, then `docs/foundation/`.
+- **How agents work here** — short pointer block: this project follows the `agentic-ai-features` plugin conventions; before any feature work an agent reads `CLAUDE.md` or `AGENTS.md`, then this README, then `docs/foundation/`.
 
 Keep the README under ~300 lines. If something needs more, put it in `docs/foundation/` and link it.
 

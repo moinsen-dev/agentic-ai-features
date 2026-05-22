@@ -9,7 +9,7 @@
 ## Start Here
 
 - **First-time agent:** read this file, then `README.md`, then any `docs/refs/` triggers that match your task.
-- **Foundation first:** run the `foundation` skill. It produces `README.md` and `docs/foundation/`. This is mandatory before feature work.
+- **Foundation first:** run the `foundation` skill. It produces `README.md`, `docs/foundation/`, hydrates this spine, and creates `docs/refs/`. This is mandatory before feature work.
 - **Planning a feature:** run the `feature-planner` skill. It produces a decision-complete plan before implementation.
 - **Implementing one task:** run the `implement-task` skill only for a single scoped task.
 - **Walking a plan:** run the `task-loop` skill for multi-task plans, stopping at human gates.
@@ -21,6 +21,7 @@ Before `feature-planner`, `implement-task`, or `task-loop` starts, the following
 
 - `README.md` — project anchor produced by the foundation council.
 - `docs/foundation/OPEN-DECISIONS.md` — gating checklist with every item ticked.
+- `docs/refs/` — progressive-disclosure references linked from this spine.
 
 While any item in `OPEN-DECISIONS.md` is unchecked (`- [ ]`), implementation work must stop and ask the human to resolve the decision inline.
 
@@ -137,6 +138,7 @@ When a task reveals durable project knowledge, capture it where future agents ca
 | `agents/architect.md` | Foundation perspective: stack pillars, system boundaries, scaling ceilings, build/buy. |
 | `agents/security-auditor.md` | Foundation perspective: threats, data flows, AI safety, compliance. |
 | `agents/skeptic.md` | Foundation perspective: load-bearing assumptions, prior art, kill criteria. |
+| `agents/foundation-spine-hydrator.md` | Post-foundation role: hydrates `AGENTS.md` and `docs/refs/` from foundation output. |
 | `agents/task-implementer.md` | Applies one task within explicit scope. |
 | `agents/task-verifier.md` | Checks measurable acceptance criteria and reports `PASS`, `FAIL`, or `HUMAN`. |
 | `agents/code-reviewer.md` | Reviews risk, conventions, tests, docs, scope creep, prompt diffs, evals, and cost. |

@@ -1,7 +1,7 @@
 {
   "name": "agentic-ai-features",
-  "version": "0.3.0",
-  "description": "Agentic workflows for building AI features with foundation gates, planning, task loops, isolated verification, code review, and AI-specific eval rules.",
+  "version": "0.3.1",
+  "description": "Agentic workflows for building AI features with foundation gates, hydrated project spines, planning, task loops, isolated verification, code review, and AI-specific eval rules.",
   "author": {
     "name": "Ulrich Diedrichsen",
     "email": "uli@moinsen.dev",
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Agentic AI Features",
-    "shortDescription": "Foundation, planning, task-loop, eval, and review workflows for AI features",
-    "longDescription": "Use Agentic AI Features to frame AI products before implementation, write decision-complete plans, execute scoped tasks with isolated implementer/verifier/reviewer roles, and audit reachability plus AI eval coverage.",
+    "shortDescription": "Foundation, spine hydration, planning, task-loop, eval, and review workflows for AI features",
+    "longDescription": "Use Agentic AI Features to frame AI products before implementation, hydrate the project spine into a progressive-disclosure agent index, write decision-complete plans, execute scoped tasks with isolated implementer/verifier/reviewer roles, and audit reachability plus AI eval coverage.",
     "developerName": "Moinsen Dev",
     "category": "Coding",
     "capabilities": [

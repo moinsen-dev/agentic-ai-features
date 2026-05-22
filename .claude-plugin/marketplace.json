@@ -6,15 +6,15 @@
     "url": "https://github.com/moinsen-dev"
   },
   "metadata": {
-    "description": "Marketplace for the agentic-ai-features plugin — agentic kit for building AI features (5-perspective foundation council, planner, task-loop, isolated implementer/verifier/reviewer, completeness audits, AI-specific project spine).",
-    "version": "0.3.0"
+    "description": "Marketplace for the agentic-ai-features plugin — agentic kit for building AI features (5-perspective foundation council, hydrated project spine, planner, task-loop, isolated implementer/verifier/reviewer, completeness audits, AI-specific project spine).",
+    "version": "0.3.1"
   },
   "plugins": [
     {
       "name": "agentic-ai-features",
       "source": "./",
-      "description": "Agentic kit for building AI features: foundation council (5 perspectives → README + gating OPEN-DECISIONS), feature-planner, task-loop, isolated implementer/verifier/reviewer agents, reachability + eval-coverage audits, and a project-spine template with AI-specific hard rules (model pinning, eval before merge, cost/latency budgets).",
-      "version": "0.3.0",
+      "description": "Agentic kit for building AI features: foundation council (5 perspectives → README + gating OPEN-DECISIONS + hydrated project spine), feature-planner, task-loop, isolated implementer/verifier/reviewer agents, reachability + eval-coverage audits, and AI-specific hard rules (model pinning, eval before merge, cost/latency budgets).",
+      "version": "0.3.1",
       "category": "development",
       "tags": ["ai", "agents", "planning", "task-loop", "evals", "code-review", "foundation", "council", "multi-perspective"],
       "homepage": "https://github.com/moinsen-dev/agentic-ai-features",
