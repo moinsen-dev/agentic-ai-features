@@ -18,11 +18,23 @@ LLMs follow contextual instructions probabilistically. A plan must therefore red
 - Prefer human gates over pretending subjective judgment is automatable.
 - Prefer small tasks over long autonomous runs.
 
+## Step 0 — Foundation gate
+
+Before reading anything else, check:
+
+- `README.md` exists at the repo root, **and**
+- `docs/foundation/OPEN-DECISIONS.md` exists, **and**
+- `docs/foundation/OPEN-DECISIONS.md` contains no unchecked items (no lines matching `- [ ]`).
+
+If any check fails, **stop** and emit: *"Foundation incomplete — run `/agentic-ai-features:foundation` first, then resolve every item in `docs/foundation/OPEN-DECISIONS.md` by ticking the checkbox after writing the decision inline. A plan written against an unresolved foundation will encode decisions the council never made."* Do not ask the user planning questions until the gate clears.
+
 ## Step 1 — Ground in the repo
 
 Read the project spine first:
 
 - `CLAUDE.md` if present, otherwise `claude.template.md`
+- `README.md` — the project anchor produced by `/agentic-ai-features:foundation`
+- `docs/foundation/PERSPECTIVES.md` and `docs/foundation/OPEN-DECISIONS.md` — the council's reasoning and the (now-resolved) decisions, for grounding scope choices
 - Any docs referenced by the matching progressive-disclosure triggers
 - Existing task or plan files if the repo has them
 - Relevant source files or configs needed to understand the requested change

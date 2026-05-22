@@ -25,11 +25,12 @@ If no single task is identified, ask the user which task to implement.
 
 Before editing:
 
-1. Read the task section.
-2. Extract `Goal`, `Scope`, `Out of scope`, `Depends on`, `Human gate`, `Acceptance criteria`, and `Verification`.
-3. Confirm dependencies from repo evidence where possible.
-4. If the task has a human gate that is not already cleared, stop and ask.
-5. If the scope is ambiguous, stop and ask.
+1. **Foundation gate.** If `README.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` contains any unchecked items (lines matching `- [ ]`), **stop** and emit: *"Foundation incomplete — run `/agentic-ai-features:foundation` first, then resolve every item in `docs/foundation/OPEN-DECISIONS.md` by ticking the checkbox after writing the decision inline."* Do not dispatch any agent.
+2. Read the task section.
+3. Extract `Goal`, `Scope`, `Out of scope`, `Depends on`, `Human gate`, `Acceptance criteria`, and `Verification`.
+4. Confirm dependencies from repo evidence where possible.
+5. If the task has a human gate that is not already cleared, stop and ask.
+6. If the scope is ambiguous, stop and ask.
 
 State the assumptions and the exact verification you will run.
 

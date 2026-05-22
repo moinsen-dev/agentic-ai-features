@@ -60,7 +60,8 @@ Next steps:
 - Open CLAUDE.md and replace the remaining placeholders.
 - Add your project's specific hard rules (the AI-feature rules are already filled in).
 - Add a row to "Common Commands" for each top-level command (build, test, lint, run).
-- Skills are now available as /agentic-ai-features:feature-planner, /agentic-ai-features:task-loop, etc.
+- **Run `/agentic-ai-features:foundation` next.** It runs a 5-perspective council (user-advocate, investor-advocate, architect, security-auditor, skeptic), then writes README.md plus docs/foundation/. Until that has run and its OPEN-DECISIONS are resolved, `feature-planner`, `implement-task`, and `task-loop` refuse to start.
+- Skills are now available as /agentic-ai-features:foundation, /agentic-ai-features:feature-planner, /agentic-ai-features:task-loop, etc.
 ```
 
 ## Boundaries

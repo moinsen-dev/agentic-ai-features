@@ -32,6 +32,7 @@ Read the task section from the plan. Extract:
 
 Before dispatching anything:
 
+- **Foundation gate.** If `README.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` contains any unchecked items (lines matching `- [ ]`), **stop** the entire loop and surface: *"Foundation incomplete — run `/agentic-ai-features:foundation` first, then resolve every item in `docs/foundation/OPEN-DECISIONS.md` by ticking the checkbox after writing the decision inline."* Do not dispatch the implementer, do not advance the task pointer. This gate runs once at the start of the loop and on every task iteration (cheap; the human may tick boxes mid-loop).
 - If the task declares a `Human gate` that has not been cleared by the caller, **stop** and surface the gate verbatim. Do not proceed until the caller explicitly clears it.
 - If the task is an AI-feature task with no `Eval criteria` block, **stop** — that violates the spine's "Eval before merge" hard rule. Ask the caller to add eval criteria or downgrade the task scope.
 - If the task's `Depends on` list names tasks with no green commit in `git log --grep "^TASK-<dep>:"`, **stop** and surface the missing dependency.

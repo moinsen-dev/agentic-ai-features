@@ -1,7 +1,7 @@
 {
   "name": "agentic-ai-features",
-  "description": "Agentic kit for building AI features: feature-planner, task-loop, isolated implementer/verifier/reviewer agents, reachability + eval-coverage audits, and a project-spine template with AI-specific hard rules (model pinning, eval before merge, cost/latency budgets).",
-  "version": "0.2.0",
+  "description": "Agentic kit for building AI features: foundation council (5 perspectives → README + gating OPEN-DECISIONS), feature-planner, task-loop, isolated implementer/verifier/reviewer agents, reachability + eval-coverage audits, and a project-spine template with AI-specific hard rules (model pinning, eval before merge, cost/latency budgets).",
+  "version": "0.3.0",
   "author": {
     "name": "Ulrich Diedrichsen",
     "email": "uli@moinsen.dev"

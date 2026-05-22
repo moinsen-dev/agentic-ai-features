@@ -8,11 +8,23 @@
 
 ## Start Here
 
-- **First-time agent:** read this file, then the referenced docs that match your task.
+- **First-time agent:** read this file, then `README.md`, then any `docs/refs/` triggers that match your task.
+- **Foundation first:** `/agentic-ai-features:foundation` — 5-perspective council (user-advocate, investor-advocate, architect, security-auditor, skeptic) → produces `README.md` and `docs/foundation/`. **Mandatory before any feature work.**
 - **Planning a feature:** `/agentic-ai-features:feature-planner` — produces a decision-complete plan before implementation.
 - **Implementing one task:** `/agentic-ai-features:implement-task` — runs implementer + verifier + reviewer (each in its own agent context) for a single scoped task, then stops.
 - **Walking a multi-task plan:** `/agentic-ai-features:task-loop` — autonomously walks a plan file task by task, commits between tasks, stops at human gates.
 - **Auditing claimed work:** `/agentic-ai-features:check-completeness` — audits current repo evidence against acceptance criteria; includes a reachability pass and an AI-eval-coverage pass.
+
+## Foundation Required
+
+This project follows the plugin's **foundation-first** workflow. Before any of `/agentic-ai-features:feature-planner`, `/agentic-ai-features:implement-task`, or `/agentic-ai-features:task-loop` will run, the following must exist:
+
+- `README.md` — project anchor authored by the foundation council.
+- `docs/foundation/OPEN-DECISIONS.md` — gating checklist with **every item ticked**.
+
+While any item in `OPEN-DECISIONS.md` is unchecked (`- [ ]`), the three implementation skills refuse to start and direct the user to resolve the decisions first.
+
+If this project is brand new and the foundation has not been run yet: stop and run `/agentic-ai-features:foundation`. If the foundation has been run but decisions are open: open `docs/foundation/OPEN-DECISIONS.md`, resolve each item, tick the box, and write the chosen direction inline.
 
 ## Project Status
 
@@ -29,6 +41,7 @@
 
 **General**
 
+- **Foundation gate** — no implementation skill (`feature-planner`, `implement-task`, `task-loop`) may start without `README.md` present and a clean `docs/foundation/OPEN-DECISIONS.md` (every item ticked). The three skills enforce this themselves and stop with a clear pointer to `/agentic-ai-features:foundation`.
 - **One task at a time** — implementation work must have one task ID, one scope, and one acceptance checklist.
 - **No silent scope expansion** — if implementation requires files or behavior outside the task scope, stop and ask.
 - **Evidence over confidence** — do not mark work complete unless the listed verification commands or observations pass.
@@ -131,11 +144,18 @@ Keep this file short. If a section needs more than a few lines of explanation, m
 
 | Slash command / Agent | Role |
 |---|---|
-| `/agentic-ai-features:feature-planner` | Creates a decision-complete feature or task plan. Does not write production code. |
-| `/agentic-ai-features:implement-task` | Implements **one** scoped task end-to-end (implementer → verifier → reviewer), then stops. |
-| `/agentic-ai-features:task-loop` | Walks a multi-task plan file autonomously. Same per-task pipeline as `implement-task`, plus commit-between-tasks and stop-at-human-gate. |
+| `/agentic-ai-features:init` | Creates this CLAUDE.md in a project from the plugin's template. Idempotent. |
+| `/agentic-ai-features:foundation` | Runs the 5-perspective foundation council. Produces `README.md` + `docs/foundation/`. **Mandatory before any feature work.** Idempotent — refuses to overwrite an existing foundation. |
+| `/agentic-ai-features:feature-planner` | Creates a decision-complete feature or task plan. Does not write production code. Refuses to start while `OPEN-DECISIONS.md` has unchecked items. |
+| `/agentic-ai-features:implement-task` | Implements **one** scoped task end-to-end (implementer → verifier → reviewer), then stops. Refuses to start while the foundation gate is active. |
+| `/agentic-ai-features:task-loop` | Walks a multi-task plan file autonomously. Same per-task pipeline as `implement-task`, plus commit-between-tasks and stop-at-human-gate. Refuses to start while the foundation gate is active. |
 | `/agentic-ai-features:check-completeness` | Audits claimed work against acceptance criteria. Includes a reachability pass and an AI-eval-coverage pass. |
-| `/agentic-ai-features:init` | (Re-)creates this CLAUDE.md in a project from the plugin's template. Idempotent. |
+| `agentic-ai-features:user-advocate` (council seat) | Foundation perspective: end-user adoption, UX friction, target-user clarity. |
+| `agentic-ai-features:investor-advocate` (council seat) | Foundation perspective: market, moat, defensibility, why-now, unit economics. |
+| `agentic-ai-features:architect` (council seat) | Foundation perspective: stack pillars, system boundaries, scaling ceilings, build/buy. |
+| `agentic-ai-features:security-auditor` (council seat) | Foundation perspective: threats, data flows, AI-safety (prompt injection, leak, misuse), compliance. |
+| `agentic-ai-features:skeptic` (council seat) | Foundation perspective: load-bearing assumptions, prior art, kill criteria — the brake on the council. |
+| `agentic-ai-features:foundation-synthesizer` | Consolidates the five council drafts into `README.md`, `docs/foundation/PERSPECTIVES.md`, `docs/foundation/OPEN-DECISIONS.md`. Does not add a sixth opinion. |
 | `agentic-ai-features:task-implementer` (sub-agent) | Applies one task within explicit scope. Stops on scope expansion. |
 | `agentic-ai-features:task-verifier` (sub-agent) | Checks measurable acceptance criteria. Marks subjective items as human verification required. |
 | `agentic-ai-features:code-reviewer` (sub-agent) | Reviews risk, conventions, tests, docs, scope creep, and (for AI features) prompt-diff / eval / cost. Does not certify product correctness. |
