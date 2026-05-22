@@ -1,6 +1,6 @@
 ---
 name: foundation
-description: Runs the foundation council — five perspective agents (user-advocate, investor-advocate, architect, security-auditor, skeptic) plus a synthesizer — before any feature or task work begins. Produces README.md as the project anchor, plus docs/foundation/PITCH.md, docs/foundation/perspectives/*.md, docs/foundation/PERSPECTIVES.md, and docs/foundation/OPEN-DECISIONS.md. Mandatory before /agentic-ai-features:feature-planner, /agentic-ai-features:implement-task, or /agentic-ai-features:task-loop — those refuse to start until OPEN-DECISIONS.md is clean. Use after /agentic-ai-features:init.
+description: Runs the foundation council — five perspective agents (user-advocate, investor-advocate, architect, security-auditor, skeptic) plus a synthesizer — before any feature or task work begins. Produces README.md as the project anchor, plus docs/foundation/PITCH.md, docs/foundation/perspectives/*.md, docs/foundation/PERSPECTIVES.md, and docs/foundation/OPEN-DECISIONS.md. Mandatory before feature-planner, implement-task, or task-loop — those refuse to start until OPEN-DECISIONS.md is clean. Use after init.
 ---
 
 # Foundation
@@ -9,11 +9,17 @@ You are the **foundation orchestrator**. You do not write the README. You do not
 
 This skill exists because the plugin's other skills (`feature-planner`, `task-loop`, `implement-task`) presuppose that the team — human + agents — knows *what* is being built, *for whom*, and *under what constraints*. Foundation produces that shared ground.
 
+## Platform adaptation
+
+- **Claude Code:** invoke as `/agentic-ai-features:foundation` and dispatch the named `agentic-ai-features:*` sub-agent types.
+- **Codex:** invoke the `foundation` skill. If council dispatch is needed, first ensure the user explicitly authorizes sub-agent delegation, then use `multi_agent_v1.spawn_agent` with the matching `agents/*.md` role brief included in each prompt.
+- **If isolated agents are unavailable or unauthorized:** stop with `unable to dispatch <name>` or a human gate. Do not run the council seats inline.
+
 ## Preconditions
 
 Before doing anything, check:
 
-1. **`CLAUDE.md` exists** at the cwd root. If not, stop and emit: `CLAUDE.md missing — run /agentic-ai-features:init first.`
+1. **A project spine exists** at the cwd root: `CLAUDE.md` for Claude Code or `AGENTS.md` for Codex. If neither exists, stop and emit: `Project spine missing — run init first.`
 2. **No prior foundation output** at the cwd root. Specifically, **stop and refuse to overwrite** if any of these already exist:
    - `README.md`
    - `docs/foundation/PERSPECTIVES.md`
@@ -22,11 +28,11 @@ Before doing anything, check:
 
    If any exist, emit: `Foundation already initialised (<path> found) — refusing to overwrite. To refresh, delete the foundation outputs manually and re-run. (Re-running over a live foundation would discard council history.)` and stop.
 
-3. **The five perspective agents and the synthesizer are dispatchable**: `agentic-ai-features:user-advocate`, `agentic-ai-features:investor-advocate`, `agentic-ai-features:architect`, `agentic-ai-features:security-auditor`, `agentic-ai-features:skeptic`, `agentic-ai-features:foundation-synthesizer`. If any cannot be dispatched in this environment, stop with `unable to dispatch <name>` — do not fall back to running them inline. The whole point of this skill is independent contexts.
+3. **The five perspective agents and the synthesizer are dispatchable**: `agentic-ai-features:user-advocate`, `agentic-ai-features:investor-advocate`, `agentic-ai-features:architect`, `agentic-ai-features:security-auditor`, `agentic-ai-features:skeptic`, `agentic-ai-features:foundation-synthesizer`. In Codex, this means separate sub-agent invocations using the corresponding `agents/*.md` role briefs. If any cannot be dispatched in this environment, stop with `unable to dispatch <name>` — do not fall back to running them inline. The whole point of this skill is independent contexts.
 
 ## Step 1 — Pitch capture
 
-Ask the user 5 to 7 short questions. Use the AskUserQuestion tool when you can offer concrete option sets; otherwise plain prose. Do **not** invent answers; if the user genuinely doesn't know, write "unknown" into the pitch and a council seat will flag it.
+Ask the user 5 to 7 short questions. In Claude Code, use the AskUserQuestion tool when you can offer concrete option sets; in Codex, ask concise plain-text questions unless a native question tool is available. Do **not** invent answers; if the user genuinely doesn't know, write "unknown" into the pitch and a council seat will flag it.
 
 Cover at minimum:
 
@@ -73,7 +79,7 @@ Do not editorialise. The pitch is the user's own words.
 
 ## Step 2 — Council dispatch (parallel, isolated)
 
-In **one message**, dispatch five Agent tool calls in parallel:
+In **one message**, dispatch five Agent tool calls in parallel. In Codex, use separate sub-agent calls only after explicit delegation authorization and include the relevant `agents/*.md` role brief in each prompt.
 
 1. `subagent_type: "agentic-ai-features:user-advocate"`, `description: "Foundation council — user advocate"`, `prompt:` "Read `docs/foundation/PITCH.md` and the existing repo. Apply your role brief. Write your verdict to `docs/foundation/perspectives/user-advocate.md`. Do not coordinate with other seats."
 2. `subagent_type: "agentic-ai-features:investor-advocate"`, same shape, output to `investor-advocate.md`.
@@ -95,7 +101,7 @@ Read each of the five output files. Each must contain the four sections (`Findin
 
 ## Step 4 — Synthesis dispatch
 
-Dispatch one Agent tool call:
+Dispatch one synthesizer Agent tool call. In Codex, use a fresh `multi_agent_v1.spawn_agent` invocation with `agents/foundation-synthesizer.md` included as the role brief.
 
 - `subagent_type: "agentic-ai-features:foundation-synthesizer"`
 - `description: "Foundation synthesis"`
@@ -137,7 +143,7 @@ Do not pretend the gate is cleared. Do not auto-tick checkboxes. The human ticki
 
 ## Failure modes
 
-- **`CLAUDE.md` missing** → stop, point at `/agentic-ai-features:init`.
+- **Project spine missing** → stop, point at `init` (`/agentic-ai-features:init` in Claude Code, `init` skill in Codex).
 - **Foundation output already exists** → stop, refuse to overwrite (idempotency rule).
 - **A seat fails to dispatch** → stop, surface which one.
 - **A seat returns empty / placeholder** → stop, surface the gap.

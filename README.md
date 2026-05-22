@@ -1,6 +1,6 @@
 # agentic-ai-features
 
-A Claude Code plugin for **building AI features and AI apps agentically**: a foundation council that produces the project README before any code is written, a feature-planner, an autonomous task-loop orchestrator, three isolated implementer / verifier / reviewer sub-agents, a completeness auditor with reachability + AI-eval-coverage passes, and a project-spine template with AI-specific hard rules.
+A Claude Code and Codex plugin for **building AI features and AI apps agentically**: a foundation council that produces the project README before any code is written, a feature-planner, an autonomous task-loop orchestrator, three isolated implementer / verifier / reviewer roles, a completeness auditor with reachability + AI-eval-coverage passes, and project-spine templates with AI-specific hard rules.
 
 This is not a generic "do code with Claude" kit. It is opinionated about how AI work differs from CRUD work: prompts need eval suites, models must be pinned, cost / latency are first-class gates, "the tests pass" never equals "the feature works", and — before any of that — the team has to agree what they're building, for whom, and why.
 
@@ -18,16 +18,16 @@ This plugin's whole shape is built around those failure modes.
 
 ## What it gives you
 
-| Slash command | What it does |
+| Claude Code command / Codex skill | What it does |
 |---|---|
-| `/agentic-ai-features:init` | Drops a `CLAUDE.md` project spine into the current repo. Idempotent — refuses to overwrite. |
-| `/agentic-ai-features:foundation` | Runs a 5-perspective council (user-advocate, investor-advocate, architect, security-auditor, skeptic) on a short pitch, then a synthesizer that produces `README.md`, `docs/foundation/PERSPECTIVES.md`, and a gating `docs/foundation/OPEN-DECISIONS.md`. **Mandatory before any feature work** — the three implementation skills below refuse to start until OPEN-DECISIONS is clean. |
-| `/agentic-ai-features:feature-planner` | Produces a decision-complete plan (tasks with goal, scope, acceptance criteria, verification, AI-eval criteria, cost / latency budget) before any code is written. |
-| `/agentic-ai-features:implement-task` | Implements **one** task. Dispatches implementer → verifier → reviewer as **three separate Agent invocations** so each step gets a fresh context window. Stops after one task. |
-| `/agentic-ai-features:task-loop` | Walks a multi-task plan file autonomously. Same three-agent pipeline per task, plus commit between tasks, stop at human gates, journal to `docs/work-log.md` for cross-session recovery. |
-| `/agentic-ai-features:check-completeness` | Audits claimed work against current repo evidence. Includes a **reachability pass** (catches "added but never called from `main()`") and an **AI-eval-coverage pass** (catches prompts without eval files). |
+| `/agentic-ai-features:init` / `init` | Drops a platform spine into the current repo: `CLAUDE.md` for Claude Code or `AGENTS.md` for Codex. Idempotent — refuses to overwrite. |
+| `/agentic-ai-features:foundation` / `foundation` | Runs a 5-perspective council (user-advocate, investor-advocate, architect, security-auditor, skeptic) on a short pitch, then a synthesizer that produces `README.md`, `docs/foundation/PERSPECTIVES.md`, and a gating `docs/foundation/OPEN-DECISIONS.md`. **Mandatory before any feature work** — the three implementation skills below refuse to start until OPEN-DECISIONS is clean. |
+| `/agentic-ai-features:feature-planner` / `feature-planner` | Produces a decision-complete plan (tasks with goal, scope, acceptance criteria, verification, AI-eval criteria, cost / latency budget) before any code is written. |
+| `/agentic-ai-features:implement-task` / `implement-task` | Implements **one** task. Dispatches implementer -> verifier -> reviewer as **three separate Agent invocations** when the platform supports isolated agents. Stops after one task. |
+| `/agentic-ai-features:task-loop` / `task-loop` | Walks a multi-task plan file autonomously. Same three-role pipeline per task, plus commit between tasks, stop at human gates, journal to `docs/work-log.md` for cross-session recovery. |
+| `/agentic-ai-features:check-completeness` / `check-completeness` | Audits claimed work against current repo evidence. Includes a **reachability pass** (catches "added but never called from `main()`") and an **AI-eval-coverage pass** (catches prompts without eval files). |
 
-| Sub-agent | Role |
+| Agent role brief | Role |
 |---|---|
 | `agentic-ai-features:user-advocate` | Foundation council seat — end-user adoption, UX friction, target-user clarity. |
 | `agentic-ai-features:investor-advocate` | Foundation council seat — market, moat, defensibility, why-now, unit economics. |
@@ -38,6 +38,8 @@ This plugin's whole shape is built around those failure modes.
 | `agentic-ai-features:task-implementer` | Applies one task within explicit scope. Stops on scope expansion. |
 | `agentic-ai-features:task-verifier` | Checks acceptance criteria against concrete evidence. Marks subjective items as `HUMAN` (not `PASS`). |
 | `agentic-ai-features:code-reviewer` | Reviews scope, risk, tests, docs, and (for AI features) model pinning, prompt diff honesty, eval coverage, cost / latency budget. |
+
+In Claude Code, these role briefs are available as custom sub-agent types. In Codex, use `multi_agent_v1.spawn_agent` when available and pass the files under `agents/*.md` as role-brief prompt context. If Codex sub-agents are unavailable or the user has not authorized delegation, stop at the human gate rather than collapsing implementer, verifier, and reviewer into one self-reviewing context.
 
 ## Core design choices
 
@@ -85,7 +87,9 @@ If `/goal` is unavailable (older Claude Code, or hooks disabled), the loop still
 
 ## Install
 
-This repo doubles as a Claude Code marketplace and a plugin — add the marketplace once, then install the plugin from it.
+This repo doubles as a Claude Code marketplace and a Codex plugin.
+
+### Claude Code
 
 ```text
 # 1. add this repo as a marketplace
@@ -111,15 +115,35 @@ For local development, point the marketplace at your checkout instead of GitHub:
 /plugin install agentic-ai-features@moinsen-agentic-ai-features
 ```
 
+### Codex
+
+Codex reads `.codex-plugin/plugin.json` from this repo and exposes the shared `skills/` directory. For local development, add this repo as a Codex marketplace in `$CODEX_HOME/config.toml`:
+
+```toml
+[marketplaces.moinsen-agentic-ai-features]
+source_type = "git"
+source = "https://github.com/moinsen-dev/agentic-ai-features.git"
+```
+
+The repo also includes `.agents/plugins/marketplace.json` for local marketplace-based installs that point at the plugin root.
+
 ## Use
 
 In a fresh project:
+
+Claude Code:
 
 ```
 /agentic-ai-features:init
 ```
 
-This drops `CLAUDE.md` into the cwd. Open it, fill in the project-specific placeholders (project description, hard rules, common commands, refs trigger map). The AI-feature hard rules and the `HUMAN`-gate triggers are pre-filled.
+Codex:
+
+```text
+Invoke the `init` skill from the Agentic AI Features plugin.
+```
+
+This drops `CLAUDE.md` or `AGENTS.md` into the cwd depending on the platform. Open it, fill in the project-specific placeholders (project description, hard rules, common commands, refs trigger map). The AI-feature hard rules and the `HUMAN`-gate triggers are pre-filled.
 
 Then — **before any feature work** — run the foundation council:
 
@@ -135,6 +159,8 @@ Then — **before any feature work** — run the foundation council:
 #   docs/foundation/OPEN-DECISIONS.md      ← 3–7 gating decisions
 ```
 
+In Codex, invoke the `foundation` skill. If it needs isolated council seats, authorize sub-agent delegation and pass the role briefs from `agents/*.md` as prompt context to `multi_agent_v1.spawn_agent`.
+
 Open `README.md` and `docs/foundation/OPEN-DECISIONS.md`. Resolve every decision (tick the box, write the call inline). While any item is unchecked, the implementation skills below refuse to start.
 
 Then, for each feature:
@@ -145,6 +171,8 @@ Then, for each feature:
 /agentic-ai-features:task-loop --plan docs/plans/<feature>.md
 # walks the plan, stops at human gates
 ```
+
+In Codex, invoke `feature-planner` and `task-loop` from the plugin skill list. The task-loop must keep implementer, verifier, and reviewer isolated when sub-agents are available; otherwise it stops at a human gate.
 
 For a single ad-hoc task (no plan file):
 
@@ -168,9 +196,14 @@ agentic-ai-features/
 ├── .claude-plugin/
 │   ├── plugin.json
 │   └── marketplace.json
+├── .codex-plugin/
+│   └── plugin.json
+├── .agents/
+│   └── plugins/marketplace.json
 ├── README.md
 ├── templates/
-│   ├── CLAUDE.md           # dropped into projects by /agentic-ai-features:init
+│   ├── AGENTS.md          # dropped into Codex projects by init
+│   ├── CLAUDE.md           # dropped into Claude Code projects by /agentic-ai-features:init
 │   └── README.md           # skeleton filled by /agentic-ai-features:foundation
 ├── skills/
 │   ├── init/SKILL.md
@@ -193,7 +226,7 @@ agentic-ai-features/
 
 ## Status
 
-Version 0.3.0. Adds the foundation council (`/agentic-ai-features:foundation`, five perspective agents, synthesizer, README template, hard gate in `feature-planner` / `implement-task` / `task-loop`). The AI-feature gates and the foundation council are the parts most likely to grow with use (safety eval surface, batch-eval triggers, additional council seats per project type).
+Version 0.3.0. Adds the foundation council (`/agentic-ai-features:foundation` in Claude Code, `foundation` in Codex), five perspective agents, synthesizer, README template, and hard gate in `feature-planner` / `implement-task` / `task-loop`. The AI-feature gates, Codex compatibility surface, and foundation council are the parts most likely to grow with use (safety eval surface, batch-eval triggers, additional council seats per project type).
 
 ## License
 

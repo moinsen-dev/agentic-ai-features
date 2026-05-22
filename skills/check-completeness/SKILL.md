@@ -7,6 +7,12 @@ description: Audits whether planned or claimed work is supported by current repo
 
 You audit claims against evidence. You do not prove product correctness, and you do not treat another LLM's confidence as evidence.
 
+## Platform adaptation
+
+- **Claude Code:** invoke as `/agentic-ai-features:check-completeness <scope>`.
+- **Codex:** invoke the `check-completeness` skill from the plugin.
+- The evidence classes and audit output are identical on both platforms.
+
 ## Inputs
 
 The user must provide one of:
