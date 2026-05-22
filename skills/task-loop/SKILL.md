@@ -9,14 +9,20 @@ You are the **orchestrator** for a multi-task plan. You do not write code, do no
 
 The single value-add of this skill is **autonomous progress between human gates**. Sub-steps run in fresh Agent invocations; you glue their outputs together and advance.
 
+## Platform adaptation
+
+- **Claude Code:** invoke as `/agentic-ai-features:task-loop --plan <path>` and dispatch the named `agentic-ai-features:*` sub-agent types.
+- **Codex:** invoke the `task-loop` skill. Dispatch Codex sub-agents with `multi_agent_v1.spawn_agent` only when the user explicitly authorized delegation, and include the matching `agents/*.md` role brief in each prompt.
+- **If isolated agents are unavailable or unauthorized:** stop at a human gate. Do not write code, verify, or review in this orchestrating context.
+
 ## Inputs
 
 - **Plan file path** — required. Default: `docs/05-IMPLEMENTATION-PLAN.md` if it exists, otherwise the caller must pass `--plan <path>`.
 - **Starting task ID** — optional. If absent, infer from `git log --grep "^TASK-"` (the next task after the most recent green commit).
 - **Stop condition** — optional. Defaults: end-of-plan, any human gate, 3 consecutive verifier-FAIL on the same task, 3 consecutive reviewer-BLOCKED on the same task. Caller may shorten with `--max-tasks N`.
-- **Project spine** — `CLAUDE.md` if present, otherwise `claude.template.md`. The spine defines the task format, hard rules, and human-gate conditions.
+- **Project spine** — `CLAUDE.md` or `AGENTS.md` if present, otherwise the matching template. The spine defines the task format, hard rules, and human-gate conditions.
 
-If the plan file is missing or the task format does not match `claude.template.md`, stop and ask.
+If the plan file is missing or the task format does not match the project spine template, stop and ask.
 
 ## Loop — strict order, per task
 
@@ -32,7 +38,7 @@ Read the task section from the plan. Extract:
 
 Before dispatching anything:
 
-- **Foundation gate.** If `README.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` contains any unchecked items (lines matching `- [ ]`), **stop** the entire loop and surface: *"Foundation incomplete — run `/agentic-ai-features:foundation` first, then resolve every item in `docs/foundation/OPEN-DECISIONS.md` by ticking the checkbox after writing the decision inline."* Do not dispatch the implementer, do not advance the task pointer. This gate runs once at the start of the loop and on every task iteration (cheap; the human may tick boxes mid-loop).
+- **Foundation gate.** If `README.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` contains any unchecked items (lines matching `- [ ]`), **stop** the entire loop and surface: *"Foundation incomplete — run foundation first (`/agentic-ai-features:foundation` in Claude Code, `foundation` skill in Codex), then resolve every item in `docs/foundation/OPEN-DECISIONS.md` by ticking the checkbox after writing the decision inline."* Do not dispatch the implementer, do not advance the task pointer. This gate runs once at the start of the loop and on every task iteration (cheap; the human may tick boxes mid-loop).
 - If the task declares a `Human gate` that has not been cleared by the caller, **stop** and surface the gate verbatim. Do not proceed until the caller explicitly clears it.
 - If the task is an AI-feature task with no `Eval criteria` block, **stop** — that violates the spine's "Eval before merge" hard rule. Ask the caller to add eval criteria or downgrade the task scope.
 - If the task's `Depends on` list names tasks with no green commit in `git log --grep "^TASK-<dep>:"`, **stop** and surface the missing dependency.
@@ -41,7 +47,8 @@ Before dispatching anything:
 
 Call the Agent tool:
 
-- `subagent_type: "agentic-ai-features:task-implementer"` (fall back to `general-purpose` only if the plugin agent is unavailable, with the agent file content inlined as instructions)
+- Claude Code: `subagent_type: "agentic-ai-features:task-implementer"`.
+- Codex: a fresh sub-agent prompt that includes `agents/task-implementer.md` as the role brief.
 - `description: "Implement <TASK-ID>"`
 - `prompt:` the verbatim task section + the rule "Implement only this task; do not bundle; stage your edits with `git add` against named paths; do not commit; return when the diff matches the acceptance criteria as best you can".
 
@@ -51,8 +58,8 @@ Wait for return. Capture the implementer's summary.
 
 Both are read-only against the staged tree, so they run concurrently. In a single message, dispatch:
 
-1. Agent tool, `subagent_type: "agentic-ai-features:task-verifier"`, `description: "Verify <TASK-ID>"`, `prompt:` the `Acceptance criteria` + `Verification` blocks.
-2. Agent tool, `subagent_type: "agentic-ai-features:code-reviewer"`, `description: "Review <TASK-ID>"`, `prompt:` the task section + the implementer's summary.
+1. Verifier: Claude Code `subagent_type: "agentic-ai-features:task-verifier"`; Codex sub-agent prompt includes `agents/task-verifier.md`. Description: `Verify <TASK-ID>`. Prompt: the `Acceptance criteria` + `Verification` blocks.
+2. Reviewer: Claude Code `subagent_type: "agentic-ai-features:code-reviewer"`; Codex sub-agent prompt includes `agents/code-reviewer.md`. Description: `Review <TASK-ID>`. Prompt: the task section + the implementer's summary.
 
 **Never** verify or review in the orchestrating context. If either agent is unavailable, stop with `unable to dispatch`.
 

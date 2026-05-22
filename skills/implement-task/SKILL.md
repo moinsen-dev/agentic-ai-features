@@ -13,10 +13,16 @@ The implementer, verifier, and reviewer steps below **must** each run in a separ
 
 If a step's required agent is unavailable in this environment, stop and report `unable to dispatch` — do not silently fall back to running the rules yourself.
 
+## Platform adaptation
+
+- **Claude Code:** dispatch the named `agentic-ai-features:*` sub-agent types.
+- **Codex:** use `multi_agent_v1.spawn_agent` only when the user explicitly authorized delegation. Include the matching role brief from `agents/task-implementer.md`, `agents/task-verifier.md`, or `agents/code-reviewer.md` in the prompt.
+- **If Codex sub-agents are unavailable or unauthorized:** stop at a human gate. Do not collapse implementation, verification, and review into this same context.
+
 ## Inputs
 
 - One task section in the repo task format.
-- The project spine: `CLAUDE.md` if present, otherwise `claude.template.md`.
+- The project spine: `CLAUDE.md` or `AGENTS.md` if present, otherwise the matching template.
 - Any referenced docs whose trigger matches the task.
 
 If no single task is identified, ask the user which task to implement.
@@ -25,7 +31,7 @@ If no single task is identified, ask the user which task to implement.
 
 Before editing:
 
-1. **Foundation gate.** If `README.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` contains any unchecked items (lines matching `- [ ]`), **stop** and emit: *"Foundation incomplete — run `/agentic-ai-features:foundation` first, then resolve every item in `docs/foundation/OPEN-DECISIONS.md` by ticking the checkbox after writing the decision inline."* Do not dispatch any agent.
+1. **Foundation gate.** If `README.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` is missing, OR `docs/foundation/OPEN-DECISIONS.md` contains any unchecked items (lines matching `- [ ]`), **stop** and emit: *"Foundation incomplete — run foundation first (`/agentic-ai-features:foundation` in Claude Code, `foundation` skill in Codex), then resolve every item in `docs/foundation/OPEN-DECISIONS.md` by ticking the checkbox after writing the decision inline."* Do not dispatch any agent.
 2. Read the task section.
 3. Extract `Goal`, `Scope`, `Out of scope`, `Depends on`, `Human gate`, `Acceptance criteria`, and `Verification`.
 4. Confirm dependencies from repo evidence where possible.
@@ -36,7 +42,7 @@ State the assumptions and the exact verification you will run.
 
 ## Step 2 — Implement
 
-**Dispatch** the `agentic-ai-features:task-implementer` agent (defined at `agents/task-implementer.md` in this plugin) via the Agent tool. Pass the verbatim task section + the explicit instruction "Implement only this task; do not bundle; stage your edits but do not commit". The implementer must, in its own context:
+**Dispatch** the `agentic-ai-features:task-implementer` agent (defined at `agents/task-implementer.md` in this plugin) via the Agent tool. In Codex, dispatch a fresh sub-agent with `agents/task-implementer.md` included as the role brief. Pass the verbatim task section + the explicit instruction "Implement only this task; do not bundle; stage your edits but do not commit". The implementer must, in its own context:
 
 - Change only files or behavior allowed by `Scope`.
 - Not implement out-of-scope improvements.
@@ -48,7 +54,7 @@ Do not implement in the orchestrating context.
 
 ## Step 3 — Verify
 
-**Dispatch** the `agentic-ai-features:task-verifier` agent (defined at `agents/task-verifier.md` in this plugin) via the Agent tool. Pass the task's `Acceptance criteria` + `Verification` blocks. The verifier must, in its own context:
+**Dispatch** the `agentic-ai-features:task-verifier` agent (defined at `agents/task-verifier.md` in this plugin) via the Agent tool. In Codex, dispatch a fresh sub-agent with `agents/task-verifier.md` included as the role brief. Pass the task's `Acceptance criteria` + `Verification` blocks. The verifier must, in its own context:
 
 - Check every acceptance criterion against concrete evidence.
 - Run the listed verification commands when available.
@@ -59,7 +65,7 @@ Do not convert `HUMAN` into `PASS`. Do not verify in the orchestrating context.
 
 ## Step 4 — Review
 
-**Dispatch** the `agentic-ai-features:code-reviewer` agent (defined at `agents/code-reviewer.md` in this plugin) via the Agent tool. Pass the task section + the implementer's summary. The reviewer must, in its own context, run the full review order from the `agentic-ai-features:code-reviewer` agent (defined at `agents/code-reviewer.md` in this plugin), including:
+**Dispatch** the `agentic-ai-features:code-reviewer` agent (defined at `agents/code-reviewer.md` in this plugin) via the Agent tool. In Codex, dispatch a fresh sub-agent with `agents/code-reviewer.md` included as the role brief. Pass the task section + the implementer's summary. The reviewer must, in its own context, run the full review order from the code-reviewer role brief, including:
 
 - scope creep
 - failing or missing tests
@@ -83,7 +89,7 @@ After one task, return a short report containing:
 - list of any human follow-up;
 - an explicit confirmation line: **"Implementer, verifier, and reviewer each ran in their own Agent invocation."**
 
-Do not start the next task unless the user explicitly asks. For multi-task plans, use `/agentic-ai-features:task-loop` instead.
+Do not start the next task unless the user explicitly asks. For multi-task plans, use `task-loop` instead (`/agentic-ai-features:task-loop` in Claude Code).
 
 ## Completion Rule
 

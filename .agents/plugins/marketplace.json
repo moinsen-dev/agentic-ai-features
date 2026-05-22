@@ -1,0 +1,20 @@
+{
+  "name": "moinsen-agentic-ai-features",
+  "interface": {
+    "displayName": "Moinsen Agentic AI Features"
+  },
+  "plugins": [
+    {
+      "name": "agentic-ai-features",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Coding"
+    }
+  ]
+}
