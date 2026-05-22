@@ -59,20 +59,18 @@ Emit a short report:
 ```
 Wrote <target> (<n> lines).
 Substituted: project name = "<name>", author = "<git-user>"
-Still placeholder: project summary, hard rules, common commands, refs trigger map.
+Still placeholder until foundation runs: project summary, hard rules, common commands, refs trigger map.
 
 Next steps:
-- Open <target> and replace the remaining placeholders.
-- Add your project's specific hard rules (the AI-feature rules are already filled in).
-- Add a row to "Common Commands" for each top-level command (build, test, lint, run).
-- Run the `foundation` workflow next. In Claude Code, use `/agentic-ai-features:foundation`; in Codex, invoke the `foundation` skill. It runs a 5-perspective council, then writes README.md plus docs/foundation/. Until that has run and its OPEN-DECISIONS are resolved, `feature-planner`, `implement-task`, and `task-loop` refuse to start.
+- Optionally fill any obvious project summary now. The `foundation` workflow will hydrate the spine from council output after synthesis.
+- Run the `foundation` workflow next. In Claude Code, use `/agentic-ai-features:foundation`; in Codex, invoke the `foundation` skill. It runs a 5-perspective council, writes README.md plus docs/foundation/, then hydrates the spine and docs/refs/. Until that has run and its OPEN-DECISIONS are resolved, `feature-planner`, `implement-task`, and `task-loop` refuse to start.
 - Skills are now available through `/agentic-ai-features:*` in Claude Code and through the Codex plugin skill list in Codex.
 ```
 
 ## Boundaries
 
 - **Never overwrite an existing `CLAUDE.md` or `AGENTS.md`.** This is a hard rule, not a suggestion.
-- Do not create `docs/`, `docs/refs/`, or any other supporting files. The template references them, but their content is project-specific — the user creates them as the project grows. The reachability pass in `check-completeness` will flag missing refs later, which is the right point to act.
+- Do not create `docs/`, `docs/refs/`, or any other supporting files. The template references them, but their content is project-specific — the `foundation` workflow hydrates them after the council and synthesizer have produced project-specific context.
 - Do not run `git add` or `git commit`. Leave the file in the working tree for the user to inspect and commit.
 - Do not detect or set up project-specific conventions (linting, testing frameworks). The template's "Hard Rules" section has placeholders for that; the user fills them in.
 - One target spine file only unless the user explicitly asks for both platform spines.
